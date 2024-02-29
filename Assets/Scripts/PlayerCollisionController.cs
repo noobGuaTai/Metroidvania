@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using Unity.VisualScripting;
 using UnityEngine;
-using PlayerControllerMoveNamespace;
+using PlayerMoveControllerNamespace;
 
-namespace GroundSensorNamespace
+namespace PlayerCollisionControllerNamespace
 {
-    public class GroundSensor : MonoBehaviour
+    public class PlayerCollisionController : MonoBehaviour
     {
         [SerializeField] int collisionType; //碰撞类型 0为椭圆，1为box，2为圆
         Vector2 colliderSizeOrigin; //碰撞体原始大小

@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GroundSensorNamespace;
+using PlayerCollisionControllerNamespace;
 using Unity.VisualScripting;
 
-namespace PlayerControllerMoveNamespace
+namespace PlayerMoveControllerNamespace
 {
-    public class PlayerControllerMove : MonoBehaviour
+    public class PlayerMoveController : MonoBehaviour
     {
         Animator anim;
         new SpriteRenderer renderer;
@@ -17,10 +17,13 @@ namespace PlayerControllerMoveNamespace
         bool jumping;//跳跃输入
         // bool isOnGround = false;//判断在地上
         // bool isOnOneWay= false;//判断在平台上
-        public GroundSensor gs;
-        public int jumpNum = 1;//跳跃段数 第一次跳跃不减段数，因此设为1
+        public PlayerCollisionController pcc;
+        public int jumpNum = 2;//跳跃段数
         private bool isLongJumping = false;
         private Coroutine checkJumpReleaseCoroutine;
+        private float jumpCooldown = 0.2f; // 跳跃后的冷却时间，可以根据需要调整
+        private float lastJumpTime; // 上次跳跃的时间
+        bool isAttacking = false;
 
         void Start()
         {
@@ -35,47 +38,52 @@ namespace PlayerControllerMoveNamespace
             moveX = Input.GetAxisRaw("Horizontal");
             jumping = Input.GetButtonDown("Jump");
             Jump();
-            CheckGround(gs);
+            CheckGround(pcc);
+            
         }
 
         void FixedUpdate()
         {
-        
-            MoveX();
             Attack();
+            MoveX();
+           
         }
 
         void MoveX()
         {
-        
-            rb.velocity = new Vector2(moveX * moveSpeed, rb.velocity.y);
-            if(moveX != 0)
+            if (moveX != 0)
             {
-                transform.localScale = new Vector3(moveX * 3, 3, 1);
-                anim.SetBool("run", true);
+                if(!isAttacking)
+                {
+                    rb.velocity = new Vector2(moveX * moveSpeed, rb.velocity.y);
+                    transform.localScale = new Vector3(moveX * 3, 3, 1);
+                    anim.SetBool("run", true);
+                }       
             }
             else
             {
+                // 当没有输入时，停止水平移动
+                rb.velocity = new Vector2(0, rb.velocity.y);
                 anim.SetBool("run", false);
             }
-        
+
         }
 
         void Jump()
         {
-            if(jumping && jumpNum > 0)
+            if (jumping && jumpNum > 0)
             {
                 rb.velocity = Vector2.up * jumpSpeed;
                 //isOnGround = false;
                 jumpNum--;
-                //anim.SetBool("jump", true);
+                anim.SetBool("jump", true);
                 // 检测跳跃释放
                 if (checkJumpReleaseCoroutine != null)
                 {
                     StopCoroutine(checkJumpReleaseCoroutine);
                 }
                 checkJumpReleaseCoroutine = StartCoroutine(CheckJumpRelease());
-
+                lastJumpTime = Time.time;
             }
         }
 
@@ -95,35 +103,26 @@ namespace PlayerControllerMoveNamespace
 
         void Attack()
         {
-            if(Input.GetButtonDown("Attack"))
+            if (Input.GetButton("Attack") && !isAttacking)
             {
+                rb.velocity = new Vector2(0, rb.velocity.y);//如果在移动，则停止移动
                 anim.SetBool("attack", true);
-            }
-            else
-            {
-                anim.SetBool("attack", false);
+                isAttacking = true;
+                Invoke("ResetAttack", 0.6f); // 假设攻击动画长度为1秒
             }
         }
 
-        // void OnCollisionEnter2D(Collision2D other)
-        // {
-        //     if(other.contacts[0].normal == Vector2.up)
-        //     {
-        //         Debug.Log("OnFloor");
-        //         isOnGround = true;
-        //         jumpNum = 2;
-        //         anim.SetBool("jump", false);
-            
-        //     }
-        // }
-
-        void CheckGround(GroundSensor gs)
+        void ResetAttack()
         {
-            // isOnGround = gs.OnGround;
-            // isOnOneWay = gs.OnOneWay;
-            if(gs.OnGround)
+            isAttacking = false;
+            anim.SetBool("attack", false);
+        }
+
+        void CheckGround(PlayerCollisionController pcc)
+        {
+            if (pcc.OnGround && Time.time - lastJumpTime > jumpCooldown)
             {
-                jumpNum = 1;
+                jumpNum = 2;
                 anim.SetBool("jump", false);
             }
         }
