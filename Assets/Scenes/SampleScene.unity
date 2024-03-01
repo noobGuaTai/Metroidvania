@@ -165,7 +165,7 @@ TilemapCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 56e64c7bed90b244789184f9826360a4, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -6349,6 +6349,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   jumpSpeed: 8
+  dashSpeed: 12
+  dashTime: 0.15
+  isDashing: 0
   pcc: {fileID: 902980000}
   jumpNum: 2
 --- !u!50 &2039513032
@@ -6367,7 +6370,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 2
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 56e64c7bed90b244789184f9826360a4, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

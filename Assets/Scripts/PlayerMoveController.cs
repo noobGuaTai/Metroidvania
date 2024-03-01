@@ -13,9 +13,12 @@ namespace PlayerMoveControllerNamespace
         Rigidbody2D rb;
         public float moveSpeed = 5f;
         public float jumpSpeed = 8f;
+        public float dashSpeed = 12f; // 冲刺速度
+        public float dashTime = 0.15f; // 冲刺持续时间
         float moveX;//左右移动输入
         bool jumping;//跳跃输入
-        // bool isOnGround = false;//判断在地上
+        bool isOnGround = false;//判断在地上
+        public bool isDashing = false;//判断是否在冲刺
         // bool isOnOneWay= false;//判断在平台上
         public PlayerCollisionController pcc;
         public int jumpNum = 2;//跳跃段数
@@ -24,6 +27,7 @@ namespace PlayerMoveControllerNamespace
         private float jumpCooldown = 0.2f; // 跳跃后的冷却时间，可以根据需要调整
         private float lastJumpTime; // 上次跳跃的时间
         bool isAttacking = false;
+        Vector2 moveDirection = Vector2.right;//移动方向
 
         void Start()
         {
@@ -37,46 +41,60 @@ namespace PlayerMoveControllerNamespace
         {
             moveX = Input.GetAxisRaw("Horizontal");
             jumping = Input.GetButtonDown("Jump");
+            if (moveX > 0)
+            {
+                moveDirection = Vector2.right;//获取移动方向
+            }
+            if (moveX < 0)
+            {
+                moveDirection = Vector2.left;//获取移动方向
+            }
             Jump();
             CheckGround(pcc);
-            
+            StartDash();
         }
 
         void FixedUpdate()
         {
+            
             Attack();
             MoveX();
-           
+            
         }
 
         void MoveX()
         {
-            if (moveX != 0)
+            if (moveX != 0 && !isDashing)
             {
-                if(!isAttacking)
+                if (!isAttacking)
                 {
                     rb.velocity = new Vector2(moveX * moveSpeed, rb.velocity.y);
                     transform.localScale = new Vector3(moveX * 3, 3, 1);
                     anim.SetBool("run", true);
-                }       
+                }
             }
             else
             {
-                // 当没有输入时，停止水平移动
-                rb.velocity = new Vector2(0, rb.velocity.y);
-                anim.SetBool("run", false);
+                if(!isDashing)
+                {
+                    // 当没有输入时，停止水平移动
+                    rb.velocity = new Vector2(0, rb.velocity.y);
+                    anim.SetBool("run", false);
+                }
             }
 
         }
 
         void Jump()
         {
-            if (jumping && jumpNum > 0)
+            if (jumping && jumpNum > 0 && !isAttacking)
             {
                 rb.velocity = Vector2.up * jumpSpeed;
                 //isOnGround = false;
                 jumpNum--;
                 anim.SetBool("jump", true);
+                isOnGround = false;
+
                 // 检测跳跃释放
                 if (checkJumpReleaseCoroutine != null)
                 {
@@ -103,12 +121,16 @@ namespace PlayerMoveControllerNamespace
 
         void Attack()
         {
-            if (Input.GetButton("Attack") && !isAttacking)
+            if (Input.GetButton("Attack") && !isAttacking && isOnGround)
             {
-                rb.velocity = new Vector2(0, rb.velocity.y);//如果在移动，则停止移动
+                if(!isDashing)
+                {
+                    rb.velocity = new Vector2(0, rb.velocity.y);//如果在移动，则停止移动（除非在冲刺）
+                }
+                
                 anim.SetBool("attack", true);
                 isAttacking = true;
-                Invoke("ResetAttack", 0.6f); // 假设攻击动画长度为1秒
+                Invoke("ResetAttack", 0.6f); // 攻击动画长度为0.6秒
             }
         }
 
@@ -118,12 +140,33 @@ namespace PlayerMoveControllerNamespace
             anim.SetBool("attack", false);
         }
 
+        void StartDash()
+        {
+            if (Input.GetButtonDown("Dash") && !isDashing)
+            {
+                StartCoroutine(Dash());
+            }
+
+        }
+
+        IEnumerator Dash()
+        {
+            isDashing = true; // 标记为正在冲刺
+            rb.velocity = moveDirection * dashSpeed;
+            rb.gravityScale = 0; // 禁用重力
+            yield return new WaitForSeconds(dashTime); // 冲刺持续时间
+            isDashing = false; // 冲刺结束
+            rb.gravityScale = 2; // 恢复重力
+            rb.velocity = Vector2.zero; // 冲刺后停止所有移动
+        }
+
         void CheckGround(PlayerCollisionController pcc)
         {
             if (pcc.OnGround && Time.time - lastJumpTime > jumpCooldown)
             {
                 jumpNum = 2;
                 anim.SetBool("jump", false);
+                isOnGround = true;
             }
         }
     }

@@ -74,7 +74,6 @@ namespace PlayerCollisionControllerNamespace
         //判断碰撞
         void CheckCollision(Collision2D collision, int layerNum)
         {
-            Debug.Log("碰撞");
             for(int i = 0; i < collision.contactCount; i++)
             {
                 switch(layerNum)
