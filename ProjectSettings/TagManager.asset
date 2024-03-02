@@ -14,10 +14,10 @@ TagManager:
   - Background
   - Floor
   - Stairs
-  - 
-  - 
-  - 
-  - 
+  - PlayerCollisionTect
+  - PlayerAttackTect
+  - Enemy
+  - EnemyAttackTect
   - 
   - 
   - 

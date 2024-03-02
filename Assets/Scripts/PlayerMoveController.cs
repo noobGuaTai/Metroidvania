@@ -26,7 +26,7 @@ namespace PlayerMoveControllerNamespace
         private Coroutine checkJumpReleaseCoroutine;
         private float jumpCooldown = 0.2f; // 跳跃后的冷却时间，可以根据需要调整
         private float lastJumpTime; // 上次跳跃的时间
-        bool isAttacking = false;
+        public bool isAttacking = false;
         Vector2 moveDirection = Vector2.right;//移动方向
 
         void Start()
@@ -152,12 +152,14 @@ namespace PlayerMoveControllerNamespace
         IEnumerator Dash()
         {
             isDashing = true; // 标记为正在冲刺
+            anim.SetBool("dash", true);
             rb.velocity = moveDirection * dashSpeed;
             rb.gravityScale = 0; // 禁用重力
             yield return new WaitForSeconds(dashTime); // 冲刺持续时间
             isDashing = false; // 冲刺结束
             rb.gravityScale = 2; // 恢复重力
             rb.velocity = Vector2.zero; // 冲刺后停止所有移动
+            anim.SetBool("dash", false);
         }
 
         void CheckGround(PlayerCollisionController pcc)
