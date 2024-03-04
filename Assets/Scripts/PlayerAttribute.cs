@@ -19,6 +19,5 @@ public class PlayerAttribute : MonoBehaviour
     public void ChangeHP(int amount)
     {
         HP += amount;
-        Debug.Log("当前HP: " + HP);
     }
 }
