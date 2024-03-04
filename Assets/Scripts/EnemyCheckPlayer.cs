@@ -17,7 +17,8 @@ public class EnemyCheckPlayer : MonoBehaviour
     private Transform playerTransform; // 玩家的Transform
     private float lastFlipTime = -1; // 记录上次转向的时间
     private float flipCooldown = 1f; // 转向的冷却时间，这里设置为1秒
-
+    float startTime;//开始巡逻时间
+    public bool isDied = false;
 
     void Start()
     {
@@ -26,6 +27,7 @@ public class EnemyCheckPlayer : MonoBehaviour
         rightBound = transform.position.x + patrolDistance;
         Debug.Log("leftBound" + leftBound);
         Debug.Log("rightBound" + rightBound);
+        startTime = Time.time + 1f; // 在当前时间基础上增加1秒的延迟
     }
 
     void Update()
@@ -38,7 +40,15 @@ public class EnemyCheckPlayer : MonoBehaviour
         }
         else
         {
-            Patrol();
+            if(Time.time > startTime && !isDied)
+            {
+                Patrol();
+            }
+            else
+            {
+                rb.velocity = new Vector2(0, rb.velocity.y);
+            }
+            
         }
     }
 
