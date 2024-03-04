@@ -8,7 +8,7 @@ namespace PlayerMoveControllerNamespace
 {
     public class PlayerMoveController : MonoBehaviour
     {
-        Animator anim;
+        public Animator anim;
         new SpriteRenderer renderer;
         Rigidbody2D rb;
         public float moveSpeed = 5f;
@@ -27,6 +27,7 @@ namespace PlayerMoveControllerNamespace
         private float jumpCooldown = 0.2f; // 跳跃后的冷却时间，可以根据需要调整
         private float lastJumpTime; // 上次跳跃的时间
         public bool isAttacking = false;
+        public bool isHurting = false;
         Vector2 moveDirection = Vector2.right;//移动方向
 
         void Start()
@@ -56,32 +57,36 @@ namespace PlayerMoveControllerNamespace
 
         void FixedUpdate()
         {
-            
+
             Attack();
             MoveX();
-            
+
         }
 
         void MoveX()
         {
-            if (moveX != 0 && !isDashing)
+            if (!isHurting)
             {
-                if (!isAttacking)
+                if (moveX != 0 && !isDashing)
                 {
-                    rb.velocity = new Vector2(moveX * moveSpeed, rb.velocity.y);
-                    transform.localScale = new Vector3(moveX * 3, 3, 1);
-                    anim.SetBool("run", true);
+                    if (!isAttacking)
+                    {
+                        rb.velocity = new Vector2(moveX * moveSpeed, rb.velocity.y);
+                        transform.localScale = new Vector3(moveX * 3, 3, 1);
+                        anim.SetBool("run", true);
+                    }
+                }
+                else
+                {
+                    if (!isDashing)
+                    {
+                        // 当没有输入时，停止水平移动
+                        rb.velocity = new Vector2(0, rb.velocity.y);
+                        anim.SetBool("run", false);
+                    }
                 }
             }
-            else
-            {
-                if(!isDashing)
-                {
-                    // 当没有输入时，停止水平移动
-                    rb.velocity = new Vector2(0, rb.velocity.y);
-                    anim.SetBool("run", false);
-                }
-            }
+
 
         }
 
@@ -123,11 +128,11 @@ namespace PlayerMoveControllerNamespace
         {
             if (Input.GetButton("Attack") && !isAttacking && isOnGround)
             {
-                if(!isDashing)
+                if (!isDashing)
                 {
                     rb.velocity = new Vector2(0, rb.velocity.y);//如果在移动，则停止移动（除非在冲刺）
                 }
-                
+
                 anim.SetBool("attack", true);
                 isAttacking = true;
                 Invoke("ResetAttack", 0.6f); // 攻击动画长度为0.6秒

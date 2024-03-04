@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerAttribute : MonoBehaviour
 {
-    int HP = 10;
+    public int HP = 100;
+    public int strike = 10;
     void Start()
     {
         

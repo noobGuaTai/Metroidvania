@@ -8,10 +8,12 @@ public class PlayerAttackTect : MonoBehaviour
 {
     CapsuleCollider2D attackTect;
     public PlayerMoveController pmc;
+    PlayerAttribute pa;
 
     void Start()
     {
         attackTect = GetComponent<CapsuleCollider2D>();
+        pa = GetComponentInParent<PlayerAttribute>();
     }
 
     
@@ -39,7 +41,7 @@ public class PlayerAttackTect : MonoBehaviour
             EnemyAttribute ea = collider.gameObject.GetComponent<EnemyAttribute>();
             if (ea != null)
             {
-                ea.ChangeHP(-1);
+                ea.ChangeHP(-pa.strike);
             }
         }
     }

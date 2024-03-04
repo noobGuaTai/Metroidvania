@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class EnemyAttribute : MonoBehaviour
 {
-    int HP = 10;
+    int HP = 100;
+    public int strike = 10;
     void Start()
     {
         
