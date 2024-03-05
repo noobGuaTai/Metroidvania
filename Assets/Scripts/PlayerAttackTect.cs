@@ -50,7 +50,7 @@ public class PlayerAttackTect : MonoBehaviour
         }
     }
 
-    public void ShowDamageText(Vector3 worldPosition, int damage)
+    void ShowDamageText(Vector3 worldPosition, int damage)
     {
         // 将世界坐标转换为屏幕坐标
         Vector2 screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
