@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemy
+  - EnemyBar1
+  - EnemyBar2
+  - EnemyHPNum1
+  - EnemyHPNum2
   layers:
   - Default
   - TransparentFX

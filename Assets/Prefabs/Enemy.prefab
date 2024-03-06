@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageTextPrefab: {fileID: 2961309297792446006, guid: 5748052ef5386654bae03fc8891ea7cd, type: 3}
-  canvas: {fileID: 0}
 --- !u!70 &1569932993354895988
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -101,7 +100,7 @@ GameObject:
   - component: {fileID: 1912018497133490521}
   m_Layer: 11
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -287,7 +286,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrolSpeed: 1
   chaseSpeed: 1
-  patrolDistance: 5
+  patrolDistance: 2.25
   detectionDistance: 2
   playerLayer:
     serializedVersion: 2

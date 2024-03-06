@@ -25,8 +25,6 @@ public class EnemyCheckPlayer : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         leftBound = transform.position.x - patrolDistance;
         rightBound = transform.position.x + patrolDistance;
-        Debug.Log("leftBound" + leftBound);
-        Debug.Log("rightBound" + rightBound);
         startTime = Time.time + 1f; // 在当前时间基础上增加1秒的延迟
     }
 

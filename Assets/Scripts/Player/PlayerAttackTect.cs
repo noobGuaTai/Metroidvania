@@ -4,6 +4,7 @@ using PlayerMoveControllerNamespace;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerAttackTect : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class PlayerAttackTect : MonoBehaviour
     PlayerAttribute pa;
     public GameObject damageTextPrefab;
     public Canvas canvas; // 引用你的UI Canvas
+    public GameObject currentEnemy;
 
     void Start()
     {
@@ -41,6 +43,7 @@ public class PlayerAttackTect : MonoBehaviour
     {
         if (collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
+            currentEnemy = collider.gameObject;
             EnemyAttribute ea = collider.gameObject.GetComponent<EnemyAttribute>();
             if (ea != null)
             {

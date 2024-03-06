@@ -19,7 +19,6 @@ namespace PlayerMoveControllerNamespace
         bool jumping;//跳跃输入
         bool isOnGround = false;//判断在地上
         public bool isDashing = false;//判断是否在冲刺
-        // bool isOnOneWay= false;//判断在平台上
         public PlayerCollisionController pcc;
         public int jumpNum = 2;//跳跃段数
         private bool isLongJumping = false;
@@ -29,6 +28,7 @@ namespace PlayerMoveControllerNamespace
         public bool isAttacking = false;
         public bool isHurting = false;
         Vector2 moveDirection = Vector2.right;//移动方向
+        public bool isInvincible = false;//当前是否无敌
 
         void Start()
         {
@@ -53,6 +53,8 @@ namespace PlayerMoveControllerNamespace
             Jump();
             CheckGround(pcc);
             StartDash();
+            UnderAttack();
+            Croush();
         }
 
         void FixedUpdate()
@@ -135,7 +137,7 @@ namespace PlayerMoveControllerNamespace
 
                 anim.SetBool("attack", true);
                 isAttacking = true;
-                Invoke("ResetAttack", 0.6f); // 攻击动画长度为0.6秒
+                Invoke("ResetAttack", 0.45f); // 攻击动画长度为0.6秒
             }
         }
 
@@ -157,13 +159,15 @@ namespace PlayerMoveControllerNamespace
         IEnumerator Dash()
         {
             isDashing = true; // 标记为正在冲刺
+            isInvincible = true;
             anim.SetBool("dash", true);
             rb.velocity = moveDirection * dashSpeed;
             rb.gravityScale = 0; // 禁用重力
             yield return new WaitForSeconds(dashTime); // 冲刺持续时间
             isDashing = false; // 冲刺结束
-            rb.gravityScale = 2; // 恢复重力
+            rb.gravityScale = 3.5f; // 恢复重力
             rb.velocity = Vector2.zero; // 冲刺后停止所有移动
+            isInvincible = false; // 取消无敌状态
             anim.SetBool("dash", false);
         }
 
@@ -174,7 +178,38 @@ namespace PlayerMoveControllerNamespace
                 jumpNum = 2;
                 anim.SetBool("jump", false);
                 isOnGround = true;
+                //rb.velocityY = 0;//重置y轴速度
             }
         }
+
+        void UnderAttack()
+        {
+            if (isHurting)
+            {
+                anim.SetBool("hurt", true);
+                StartCoroutine(Hurt());
+            }
+
+        }
+
+        IEnumerator Hurt()
+        {
+            yield return new WaitForSeconds(0.3f);
+            isHurting = false;
+            anim.SetBool("hurt", false);
+        }
+
+        void Croush()
+        {
+            if(Input.GetButton("Croush"))
+            {
+                anim.SetBool("croush", true);
+            }
+            else
+            {
+                anim.SetBool("croush", false);
+            }
+        }
+
     }
 }

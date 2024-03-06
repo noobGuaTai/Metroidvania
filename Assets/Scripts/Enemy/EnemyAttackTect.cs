@@ -9,11 +9,12 @@ public class EnemyAttackTect : MonoBehaviour
     EnemyAttribute ea;
     new Collider2D collider2D;
     public GameObject damageTextPrefab;
-    public Canvas canvas; // 引用你的UI Canvas
+    Canvas canvas; // 引用你的UI Canvas
     void Start()
     {
         ea = GetComponentInParent<EnemyAttribute>();
         collider2D = GetComponent<Collider2D>();
+        canvas = FindFirstObjectByType<Canvas>();
     }
 
 
@@ -29,7 +30,7 @@ public class EnemyAttackTect : MonoBehaviour
         {
             PlayerAttribute pa = collider.gameObject.GetComponent<PlayerAttribute>();
             PlayerMoveController pmc = collider.gameObject.GetComponent<PlayerMoveController>();
-            if (pa != null && pmc != null)
+            if (pa != null && pmc != null && pmc.isInvincible == false)
             {
                 pa.ChangeHP(-ea.strike);
 
@@ -44,9 +45,9 @@ public class EnemyAttackTect : MonoBehaviour
                     // 对玩家施加力，实现击退效果
                     rb.AddForce(forceDirection * forceMagnitude, ForceMode2D.Impulse);
                     pmc.isHurting = true;
-                    pmc.anim.SetBool("hurt", true);
+                    //pmc.anim.SetBool("hurt", true);
                     collider2D.enabled = false; // 禁用碰撞器，防止玩家再次受击
-                    ShowDamageText(collider.transform.position, pa.strike);//展示伤害数字
+                    ShowDamageText(collider.transform.position, ea.strike);//展示伤害数字
                     StartCoroutine(Hurt(pmc));
                 }
             }
@@ -55,10 +56,7 @@ public class EnemyAttackTect : MonoBehaviour
 
     IEnumerator Hurt(PlayerMoveController pmc)
     {
-        yield return new WaitForSeconds(0.3f);
-        pmc.isHurting = false;
-        pmc.anim.SetBool("hurt", false);
-        yield return new WaitForSeconds(0.7f);
+        yield return new WaitForSeconds(1f);
         collider2D.enabled = true; // 1秒后玩家才可再次受击
     }
 
